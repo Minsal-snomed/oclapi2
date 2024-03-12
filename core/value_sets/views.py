@@ -122,7 +122,21 @@ class ValueSetExpandView(CollectionVersionExpansionsView):
         return ValueSetExpansionSerializer
 
     def get_filter_params(self, default_version_to_head=True):
-        return super().get_filter_params(False)
+        # Método modificado para incluir tu lógica de extracción de parámetros
+        query_params = self.request.query_params.dict()
+
+        version = query_params.get('version', None) or self.kwargs.get('version', None)
+        if not version and default_version_to_head:
+            version = HEAD
+
+        kwargs = self.kwargs.copy()
+        if self.user_is_self and self.request.user.is_authenticated:
+            kwargs['user'] = self.request.user.username
+
+        return {
+            **query_params.copy(), **kwargs,
+            'version': version, 'include_references': self.should_include_references()
+        }
 
     def get_base_queryset(self):
         queryset = super().get_base_queryset()
@@ -133,16 +147,11 @@ class ValueSetExpandView(CollectionVersionExpansionsView):
         qs = super().get_queryset()
 
         if self.request.method == 'GET':
-            parameters = ValueSetExpansionParametersSerializer.parse_query_params(self.request.query_params)
-            if not parameters.is_valid():
-                raise ValidationError(message=parameters.errors)
+            filter_param = self.request.query_params.get('filter', None)  # Obtener el parámetro 'filter'
 
-            params = parameters.validated_data
-            params = params.get('parameters', {})
-            if not params:
-                qs = qs.filter(parameters=default_expansion_parameters()).order_by('-id')
-            else:
-                qs = qs.filter(parameters=params).order_by('-id')
+            if filter_param:
+                # Asumiendo que 'display_name' es el campo a filtrar, ajusta según sea necesario
+                qs = qs.filter(display_name__icontains=filter_param)
 
         return qs
 
