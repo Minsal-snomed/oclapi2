@@ -18,12 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      #le da chmod +x a los scripts start_celery_beat.sh y start_celery_worker.sh
-      - name: Set execute permissions for start_celery_beat.sh and start_celery_worker.sh
-        run: |
-          chmod +x start_celery_beat.sh
-          chmod +x start_celery_worker.sh
-
       #crear el tag de manera automatica con un contador
       - name: Calculate new tag version
         id: new_tag
