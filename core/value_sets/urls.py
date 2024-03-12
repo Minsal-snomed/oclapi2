@@ -16,10 +16,10 @@ urlpatterns = [
     re_path(fr"^(?P<collection>{NAMESPACE_PATTERN})/\$expand/$", views.ValueSetExpandView.as_view(),
             name='value-set-expand'),
 
-    re_path(fr"^\$validate-code/$", views.ValueSetValidateCodeView.as_view(),
+    re_path(r"^\$validate-code/$", views.ValueSetValidateCodeView.as_view(),
             name='value-set-validate-code-global'),
 
-    re_path(fr"^\$expand/$", views.ValueSetExpandView.as_view(),
+    re_path(r"^\$expand/$", views.ValueSetExpandView.as_view(),
             name='value-set-expand-global'),
 
     re_path(
